@@ -6,29 +6,29 @@ output: pdf_document
 ---
 ###Task 1: Read in dataset and preprocess
 
-####Import Data
+Import Data
 ```{r}
 Sensor <- read.csv('activity.csv')
 ```
-####Convert csv to dataframe
+Convert csv to dataframe
 ```{r}
 Sensor_activity <- data.frame(Sensor)
 ```
-####Datatypes
+Datatypes
 ```{r}
 str(Sensor_activity)
 ```
-####Summary statistics
+Summary statistics
 ```{r}
 summary(Sensor_activity)
 ```
 
 ###Task 2: Histogram of total number of steps taken each day
-####Group by date and take total
+Group by date and take total
 ```{r}
 steps_calc <- aggregate(Sensor_activity$steps, by = list(Sensor_activity$date), FUN = 'sum')
 ```
-####Histogram total steps per day
+Histogram total steps per day
 ```{r, echo=FALSE}
 hist(steps_calc$x, main = "Histogram of total steps per day", xlab = "total steps", 
      ylim = c(0,30), col = "green")
@@ -40,11 +40,11 @@ summary(steps_calc$x)
 ```
 
 ###Task 4: Time series plot of average number of steps taken
-####Group by interval and take average
+Group by interval and take average
 ```{r}
 steps_calc_avg <- aggregate(steps ~ interval, Sensor_activity, mean)
 ```
-####Plot of average steps per day
+Plot of average steps per day
 ```{r, echo=FALSE}
 plot(steps_calc_avg$interval, steps_calc_avg$steps, type = "l", main = "Average activity patterns",
          xlab = "Interval", ylab = "Steps") 
@@ -56,40 +56,40 @@ steps_calc_avg[which.max(steps_calc_avg$steps), 1]
 ```
 
 ###Task 6 - impute missing values
-####Number of missing values in steps variable
+Number of missing values in steps variable
 ```{r}
 sum(is.na(Sensor_activity$steps))
 ```
 
-####Imputation of data using MICE package
+Imputation of data using MICE package
 ```{r}
 library(mice)
 ```
 
-####Apply MICE algorithm to NA dataset. 
-####I am setting the method parameter to predictive mean matching. 
+Apply MICE algorithm to NA dataset. 
+I am setting the method parameter to predictive mean matching. 
 ```{r}
 imputed_sensor <- mice(Sensor_activity, m = 5, maxit = 50, method = "pmm", seed = 5)
 ```
 
-####Get completed dataset
+Get completed dataset
 ```{r}
 completeData <- complete(imputed_sensor, 4)
 ```
 
 ###Task 7 - histogram of total number of steps per day after imputation
-####Plot histogram
+Plot histogram
 ```{r}
 na_steps_calc <- aggregate(completeData$steps, by = list(completeData$date), FUN = 'sum')
 ```
 
-####Histogram total steps per day
+Histogram total steps per day
 ```{r, echo=FALSE}
 hist(na_steps_calc$x, main = "Histogram of total steps per day", xlab = "total steps", 
      ylim = c(0,30), col = "green")
 ```
 
-####Mean and median of imputed dataset
+Mean and median of imputed dataset
 ```{r}
 summary(na_steps_calc$x)
 ```
@@ -99,18 +99,18 @@ summary(na_steps_calc$x)
 ```{r}
 library(timeDate)
 ```
-####Create new column for weekday or weekend
+Create new column for weekday or weekend
 ```{r}
 completeData$Weekday <- isWeekday(completeData$date)
 ```
-####Average steps for weekday
+Average steps for weekday
 ```{r}
 weekday <- subset(completeData, completeData$Weekday == "TRUE")
 ```
 ```{r}
 weekdayMean <- aggregate(steps ~ interval, data = weekday, mean)
 ```
-####Average steps for weekend
+Average steps for weekend
 ```{r}
 weekend <- subset(completeData, completeData$Weekday == "FALSE")
 ```
@@ -118,13 +118,13 @@ weekend <- subset(completeData, completeData$Weekday == "FALSE")
 weekendMean <- aggregate(steps ~ interval, data = weekend, mean)
 ```
 
-####Plot of weekday
+Plot of weekday
 ```{r, echo=FALSE}
 plot(weekdayMean$interval, weekdayMean$steps,
      xlab = "interval", ylab = "Number of steps",
      main = "Weekday", col = "blue", type = "l") 
 ```
-####Plot of weekend
+Plot of weekend
 ```{r, echo=FALSE}
 plot(weekendMean$interval, weekendMean$steps,
      xlab = "interval", ylab = "Number of steps",
